@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 
 # ==========================================
-# CREAR BASE DE DATOS Y TABLAS
+# CREAR BASE DE DATOS
 # ==========================================
 
 def crear_base_datos():
@@ -45,24 +45,22 @@ def crear_base_datos():
 
 
 # ==========================================
-# PÁGINA PRINCIPAL
+# INICIO
 # ==========================================
 
 @app.route("/")
 def inicio():
-
     return render_template("index.html")
 
 
 # ==========================================
-# MOSTRAR CARRERAS
+# CARRERAS - LISTAR
 # ==========================================
 
 @app.route("/carreras")
 def carreras():
 
     conn = sqlite3.connect("instituto.db")
-
     conn.row_factory = sqlite3.Row
 
     datos = conn.execute(
@@ -78,7 +76,7 @@ def carreras():
 
 
 # ==========================================
-# REGISTRAR NUEVA CARRERA
+# CARRERAS - REGISTRAR
 # ==========================================
 
 @app.route("/carreras/nueva", methods=["GET", "POST"])
@@ -87,7 +85,6 @@ def nueva_carrera():
     if request.method == "POST":
 
         nombre = request.form["nombre"]
-
         duracion = request.form["duracion"]
 
         conn = sqlite3.connect("instituto.db")
@@ -101,7 +98,6 @@ def nueva_carrera():
         )
 
         conn.commit()
-
         conn.close()
 
         return redirect("/carreras")
@@ -110,28 +106,23 @@ def nueva_carrera():
 
 
 # ==========================================
-# EDITAR CARRERA
+# CARRERAS - EDITAR
 # ==========================================
 
 @app.route("/carreras/editar/<int:id>", methods=["GET", "POST"])
 def editar_carrera(id):
 
     conn = sqlite3.connect("instituto.db")
-
     conn.row_factory = sqlite3.Row
 
     carrera = conn.execute(
-        """
-        SELECT * FROM carreras
-        WHERE id = ?
-        """,
+        "SELECT * FROM carreras WHERE id = ?",
         (id,)
     ).fetchone()
 
     if request.method == "POST":
 
         nombre = request.form["nombre"]
-
         duracion = request.form["duracion"]
 
         conn.execute(
@@ -144,7 +135,6 @@ def editar_carrera(id):
         )
 
         conn.commit()
-
         conn.close()
 
         return redirect("/carreras")
@@ -158,7 +148,7 @@ def editar_carrera(id):
 
 
 # ==========================================
-# ELIMINAR CARRERA
+# CARRERAS - ELIMINAR
 # ==========================================
 
 @app.route("/carreras/eliminar/<int:id>")
@@ -167,22 +157,137 @@ def eliminar_carrera(id):
     conn = sqlite3.connect("instituto.db")
 
     conn.execute(
-        """
-        DELETE FROM carreras
-        WHERE id = ?
-        """,
+        "DELETE FROM carreras WHERE id = ?",
         (id,)
     )
 
     conn.commit()
-
     conn.close()
 
     return redirect("/carreras")
 
 
 # ==========================================
-# EJECUTAR APLICACIÓN
+# ESTUDIANTES - LISTAR
+# ==========================================
+
+@app.route("/estudiantes")
+def estudiantes():
+
+    conn = sqlite3.connect("instituto.db")
+    conn.row_factory = sqlite3.Row
+
+    datos = conn.execute(
+        "SELECT * FROM estudiantes"
+    ).fetchall()
+
+    conn.close()
+
+    return render_template(
+        "estudiantes.html",
+        estudiantes=datos
+    )
+
+
+# ==========================================
+# ESTUDIANTES - REGISTRAR
+# ==========================================
+
+@app.route("/estudiantes/nuevo", methods=["GET", "POST"])
+def nuevo_estudiante():
+
+    if request.method == "POST":
+
+        nombre = request.form["nombre"]
+        apellidos = request.form["apellidos"]
+        fecha_nacimiento = request.form["fecha_nacimiento"]
+
+        conn = sqlite3.connect("instituto.db")
+
+        conn.execute(
+            """
+            INSERT INTO estudiantes
+            (nombre, apellidos, fecha_nacimiento)
+            VALUES (?, ?, ?)
+            """,
+            (nombre, apellidos, fecha_nacimiento)
+        )
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/estudiantes")
+
+    return render_template("nuevo_estudiante.html")
+
+
+# ==========================================
+# ESTUDIANTES - EDITAR
+# ==========================================
+
+@app.route("/estudiantes/editar/<int:id>", methods=["GET", "POST"])
+def editar_estudiante(id):
+
+    conn = sqlite3.connect("instituto.db")
+    conn.row_factory = sqlite3.Row
+
+    estudiante = conn.execute(
+        "SELECT * FROM estudiantes WHERE id = ?",
+        (id,)
+    ).fetchone()
+
+    if request.method == "POST":
+
+        nombre = request.form["nombre"]
+        apellidos = request.form["apellidos"]
+        fecha_nacimiento = request.form["fecha_nacimiento"]
+
+        conn.execute(
+            """
+            UPDATE estudiantes
+            SET nombre = ?,
+                apellidos = ?,
+                fecha_nacimiento = ?
+            WHERE id = ?
+            """,
+            (nombre, apellidos, fecha_nacimiento, id)
+        )
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/estudiantes")
+
+    conn.close()
+
+    return render_template(
+        "editar_estudiante.html",
+        estudiante=estudiante
+    )
+
+
+# ==========================================
+# ESTUDIANTES - ELIMINAR
+# ==========================================
+
+@app.route("/estudiantes/eliminar/<int:id>")
+def eliminar_estudiante(id):
+
+    conn = sqlite3.connect("instituto.db")
+
+    conn.execute(
+        "DELETE FROM estudiantes WHERE id = ?",
+        (id,)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return redirect("/estudiantes")
+
+
+# ==========================================
+# EJECUTAR
 # ==========================================
 
 if __name__ == "__main__":
