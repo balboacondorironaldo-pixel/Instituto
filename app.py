@@ -287,7 +287,106 @@ def eliminar_estudiante(id):
 
 
 # ==========================================
-# EJECUTAR
+# MATRÍCULAS - LISTAR
+# ==========================================
+
+@app.route("/matriculas")
+def matriculas():
+
+    conn = sqlite3.connect("instituto.db")
+    conn.row_factory = sqlite3.Row
+
+    datos = conn.execute("""
+        SELECT
+            matriculas.id,
+            matriculas.fecha,
+            estudiantes.nombre || ' ' || estudiantes.apellidos AS estudiante,
+            carreras.nombre AS carrera
+        FROM matriculas
+        INNER JOIN estudiantes
+            ON matriculas.estudiante_id = estudiantes.id
+        INNER JOIN carreras
+            ON matriculas.carrera_id = carreras.id
+        ORDER BY matriculas.id
+    """).fetchall()
+
+    conn.close()
+
+    return render_template(
+        "matriculas.html",
+        matriculas=datos
+    )
+
+
+# ==========================================
+# MATRÍCULAS - REGISTRAR
+# ==========================================
+
+@app.route("/matriculas/nueva", methods=["GET", "POST"])
+def nueva_matricula():
+
+    conn = sqlite3.connect("instituto.db")
+    conn.row_factory = sqlite3.Row
+
+    if request.method == "POST":
+
+        fecha = request.form["fecha"]
+        carrera_id = request.form["carrera_id"]
+        estudiante_id = request.form["estudiante_id"]
+
+        conn.execute(
+            """
+            INSERT INTO matriculas
+            (fecha, carrera_id, estudiante_id)
+            VALUES (?, ?, ?)
+            """,
+            (fecha, carrera_id, estudiante_id)
+        )
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/matriculas")
+
+    carreras = conn.execute(
+        "SELECT * FROM carreras"
+    ).fetchall()
+
+    estudiantes = conn.execute(
+        "SELECT * FROM estudiantes"
+    ).fetchall()
+
+    conn.close()
+
+    return render_template(
+        "nueva_matricula.html",
+        carreras=carreras,
+        estudiantes=estudiantes
+    )
+
+
+# ==========================================
+# MATRÍCULAS - ELIMINAR
+# ==========================================
+
+@app.route("/matriculas/eliminar/<int:id>")
+def eliminar_matricula(id):
+
+    conn = sqlite3.connect("instituto.db")
+
+    conn.execute(
+        "DELETE FROM matriculas WHERE id = ?",
+        (id,)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return redirect("/matriculas")
+
+
+# ==========================================
+# EJECUTAR APLICACIÓN
 # ==========================================
 
 if __name__ == "__main__":

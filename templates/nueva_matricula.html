@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Nueva Matrícula</title>
+</head>
+
+<body>
+
+    <h1>Registrar Matrícula</h1>
+
+    <form method="POST">
+
+        <label>Fecha de matrícula:</label>
+        <br>
+
+        <input
+            type="date"
+            name="fecha"
+            required
+        >
+
+        <br><br>
+
+        <label>Estudiante:</label>
+        <br>
+
+        <select name="estudiante_id" required>
+
+            <option value="">
+                Seleccionar estudiante
+            </option>
+
+            {% for estudiante in estudiantes %}
+
+            <option value="{{ estudiante['id'] }}">
+
+                {{ estudiante['nombre'] }}
+                {{ estudiante['apellidos'] }}
+
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+        <br><br>
+
+        <label>Carrera:</label>
+        <br>
+
+        <select name="carrera_id" required>
+
+            <option value="">
+                Seleccionar carrera
+            </option>
+
+            {% for carrera in carreras %}
+
+            <option value="{{ carrera['id'] }}">
+
+                {{ carrera['nombre'] }}
+
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+        <br><br>
+
+        <button type="submit">
+            Guardar Matrícula
+        </button>
+
+    </form>
+
+    <br>
+
+    <a href="/matriculas">
+        Volver a matrículas
+    </a>
+
+</body>
+
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Matrículas</title>
+</head>
+
+<body>
+
+    <h1>Gestión de Matrículas</h1>
+
+    <a href="/matriculas/nueva">
+        Registrar nueva matrícula
+    </a>
+
+    <br><br>
+
+    <table border="1">
+
+        <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Estudiante</th>
+            <th>Carrera</th>
+            <th>Acciones</th>
+        </tr>
+
+        {% for matricula in matriculas %}
+
+        <tr>
+
+            <td>{{ matricula["id"] }}</td>
+
+            <td>{{ matricula["fecha"] }}</td>
+
+            <td>{{ matricula["estudiante"] }}</td>
+
+            <td>{{ matricula["carrera"] }}</td>
+
+            <td>
+                <a href="/matriculas/eliminar/{{ matricula['id'] }}"
+                   onclick="return confirm('¿Deseas eliminar esta matrícula?');">
+                    Eliminar
+                </a>
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+    <br>
+
+    <a href="/">
+        Volver al inicio
+    </a>
+
+</body>
+
+</html>
