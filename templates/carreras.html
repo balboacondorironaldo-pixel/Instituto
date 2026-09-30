@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Carreras</title>
+</head>
+
+<body>
+
+    <h1>Gestión de Carreras</h1>
+
+    <a href="/carreras/nueva">Registrar nueva carrera</a>
+
+    <br><br>
+
+    <table border="1">
+
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Duración</th>
+            <th>Acciones</th>
+        </tr>
+
+        {% for carrera in carreras %}
+
+        <tr>
+
+            <td>{{ carrera["id"] }}</td>
+
+            <td>{{ carrera["nombre"] }}</td>
+
+            <td>{{ carrera["duracion"] }} años</td>
+
+            <td>
+
+                <a href="/carreras/editar/{{ carrera['id'] }}">
+                    Editar
+                </a>
+
+                |
+
+                <a href="/carreras/eliminar/{{ carrera['id'] }}"
+                   onclick="return confirm('¿Deseas eliminar esta carrera?');">
+                    Eliminar
+                </a>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+    <br>
+
+    <a href="/">Volver al inicio</a>
+
+</body>
+
+</html>
